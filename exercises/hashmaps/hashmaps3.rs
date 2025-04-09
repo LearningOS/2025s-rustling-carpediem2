@@ -14,7 +14,7 @@
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
 
 use std::collections::HashMap;
 
@@ -39,6 +39,21 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+                // Update team 1's stats
+                let entry1 = scores.entry(team_1_name.clone()).or_insert(Team {
+                    goals_scored: 0,
+                    goals_conceded: 0,
+                });
+                entry1.goals_scored += team_1_score;
+                entry1.goals_conceded += team_2_score;
+         
+                // Update team 2's stats
+                let entry2 = scores.entry(team_2_name.clone()).or_insert(Team {
+                    goals_scored: 0,
+                    goals_conceded: 0,
+                });
+                entry2.goals_scored += team_2_score;
+                entry2.goals_conceded += team_1_score;
     }
     scores
 }
@@ -84,3 +99,9 @@ mod tests {
         assert_eq!(team.goals_conceded, 2);
     }
 }
+
+
+//scores.entry(team_1_name.clone())：尝试获取 scores 中以 team_1_name 为键的条目。
+//.or_insert(Team { goals_scored: 0, goals_conceded: 0 })：如果 team_1_name 不存在于 scores 中，则插入一个新的 Team 实例，初始进球数和失球数均为 0。
+//team_1_name.clone() 和 team_2_name.clone() 是为了将字符串的拥有权从调用者转移到 HashMap 中。如果 team_1_name 和 team_2_name 是 String 类型，这是必要的；如果是 &str 类型，则不需要克隆。
+//如果 scores 是一个共享资源（例如在多线程环境中使用），需要确保对它的访问是线程安全的，可以使用 Mutex 或 RwLock 等同步原语。

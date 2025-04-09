@@ -20,7 +20,7 @@
 //
 // No hints this time!
 
-// I AM NOT DONE
+
 
 pub enum Command {
     Uppercase,
@@ -32,11 +32,22 @@ mod my_module {
     use super::Command;
 
     // TODO: Complete the function signature!
-    pub fn transformer(input: ???) -> ??? {
+    pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
         // TODO: Complete the output declaration!
-        let mut output: ??? = vec![];
+        let mut output: Vec<String> = vec![]; //let mut output = Vec::new();
         for (string, command) in input.iter() {
             // TODO: Complete the function body. You can do it!
+            let transformered = match command{
+                Command::Uppercase => string.to_uppercase(),
+                Command::Trim => string.trim().to_string(),
+                Command:: Append(n)=>{
+                    let append_str="bar".repeat(*n);//error[E0308]: mismatched types 问题出在.repeat(n)这里，repeat方法需要的是usize类型的参数，但你传入了&usize（引用类型）。
+                    //修复方法：在n前加星号解引用 .repeat(*n)
+                    string.to_owned() + &append_str//error[E0369]: cannot add &String to &String ||Rust中不能直接拼接两个字符串引用，左侧需要是拥有所有权的String。
+                    //修复方法：将左侧转换为拥有所有权的String   string.to_owned() + &append_str
+                }
+            };
+            output.push(transformered);
         }
         output
     }
@@ -45,7 +56,7 @@ mod my_module {
 #[cfg(test)]
 mod tests {
     // TODO: What do we need to import to have `transformer` in scope?
-    use ???;
+    use super::my_module::transformer;
     use super::Command;
 
     #[test]
