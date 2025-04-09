@@ -3,8 +3,9 @@
 // Execute `rustlings hint options2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
+//完成simple_option测试：使用if let语句来解构optional_target，获取其内部的String值。在if let块内部进行断言，确保解构出的值与target相等。
+//完成layered_option测试：使用while let语句来处理optional_integers.pop()返回的Option<Option<i8>>。在while let块内部进行断言，确保解构出的值与cursor相等，并更新cursor的值。
 #[cfg(test)]
 mod tests {
     #[test]
@@ -13,9 +14,12 @@ mod tests {
         let optional_target = Some(target);
 
         // TODO: Make this an if let statement whose value is "Some" type
-        word = optional_target {
+        if let Some(word) = optional_target {
             assert_eq!(word, target);
         }
+        //if let Some(word) = optional_target 会尝试解构 optional_target
+    //如果解构成功（即 optional_target 是 Some 类型），则将内部值绑定到 word 变量
+    //在代码块内部进行断言，验证解构出的值是否等于 target
     }
 
     #[test]
@@ -32,11 +36,13 @@ mod tests {
         // TODO: make this a while let statement - remember that vector.pop also
         // adds another layer of Option<T>. You can stack `Option<T>`s into
         // while let and if let.
-        integer = optional_integers.pop() {
+        while let Some(Some(integer)) = optional_integers.pop() {
             assert_eq!(integer, cursor);
             cursor -= 1;
         }
-
+        //optional_integers.pop() 返回 Option<Option<i8>>（因为 Vec::pop() 本身返回 Option<&T>，而这里的 T 是 Option<i8>）
+        //while let Some(Some(integer)) = ... 进行双重解构：外层 Some 来自 Vec::pop() 的结果,内层 Some 来自 Option<i8> 的解构
+        //如果解构成功，则将内部值绑定到 integer 变量,在循环体内进行断言，并更新 cursor 的值
         assert_eq!(cursor, 0);
     }
 }

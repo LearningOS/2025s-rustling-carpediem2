@@ -22,14 +22,19 @@
 // Execute `rustlings hint errors5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
 
 use std::error;
 use std::fmt;
 use std::num::ParseIntError;
 
+//将main函数的返回类型从Result<(), Box<dyn ???>>更新为Result<(), Box<dyn error::Error>>。
+//这允许main函数返回任何实现了error::Error trait的错误类型，包括CreationError和ParseIntError。
+
+//使用Box<dyn error::Error>作为返回类型可以统一处理不同类型的错误，提高代码的灵活性和可维护性。
+//通过让CreationError实现error::Error trait，我们可以将其与Rust的标准错误处理机制集成，使得错误处理更加一致和方便
 // TODO: update the return type of `main()` to make this compile.
-fn main() -> Result<(), Box<dyn ???>> {
+fn main() -> Result<(), Box<dyn error::Error>> {// 更新返回类型为 Box<dyn error::Error>
     let pretend_user_input = "42";
     let x: i64 = pretend_user_input.parse()?;
     println!("output={:?}", PositiveNonzeroInteger::new(x)?);
