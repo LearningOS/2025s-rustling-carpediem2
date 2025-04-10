@@ -6,14 +6,25 @@
 // Execute `rustlings hint generics2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
 
-struct Wrapper {
-    value: u32,
+
+//struct Wrapper {
+//    value: u32,
+//}
+
+struct Wrapper<T> {//泛型结构体：Wrapper<T>现在可以存储任何类型T
+    value: T,
 }
 
-impl Wrapper {
-    pub fn new(value: u32) -> Self {
+//impl Wrapper {
+//    pub fn new(value: u32) -> Self {
+//        Wrapper { value }
+//    }
+//}
+
+impl<T> Wrapper<T> {//泛型实现：impl<T> Wrapper<T>为所有可能的类型提供实现
+
+    pub fn new(value: T) -> Self {
         Wrapper { value }
     }
 }
@@ -31,4 +42,6 @@ mod tests {
     fn store_str_in_wrapper() {
         assert_eq!(Wrapper::new("Foo").value, "Foo");
     }
+
+
 }

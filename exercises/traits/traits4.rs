@@ -7,7 +7,7 @@
 // Execute `rustlings hint traits4` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
 
 pub trait Licensed {
     fn licensing_info(&self) -> String {
@@ -23,9 +23,13 @@ impl Licensed for SomeSoftware {}
 impl Licensed for OtherSoftware {}
 
 // YOU MAY ONLY CHANGE THE NEXT LINE
-fn compare_license_types(software: ??, software_two: ??) -> bool {
+fn compare_license_types<T: Licensed,U: Licensed>(software: T, software_two: U) -> bool {
     software.licensing_info() == software_two.licensing_info()
 }
+/*
+泛型与特质约束：compare_license_types函数使用两个泛型类型参数T和U，它们都被Licensed特质约束。这意味着T和U可以是任何实现了Licensed特质的类型。
+灵活性：通过使用泛型，函数可以接受SomeSoftware和OtherSoftware的实例（或任何其他实现了Licensed特质的类型），并比较它们的许可信息。这使得函数具有可重用性和类型安全性。
+ */
 
 #[cfg(test)]
 mod tests {
