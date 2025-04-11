@@ -27,7 +27,7 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
+
 
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
@@ -41,6 +41,15 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        if r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 {
+            return Err(IntoColorError::IntConversion);
+        }
+        Ok(Color {
+            red: r as u8,
+            green: g as u8,
+            blue: b as u8,
+        })
     }
 }
 
@@ -48,6 +57,15 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [r, g, b] = arr;
+        if r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 {
+            return Err(IntoColorError::IntConversion);
+        }
+        Ok(Color {
+            red: r as u8,
+            green: g as u8,
+            blue: b as u8,
+        })
     }
 }
 
@@ -55,8 +73,36 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        let r = slice[0];
+        let g = slice[1];
+        let b = slice[2];
+        if r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 {
+            return Err(IntoColorError::IntConversion);
+        }
+        Ok(Color {
+            red: r as u8,
+            green: g as u8,
+            blue: b as u8,
+        })
     }
 }
+/*
+元组和数组实现：
+    直接解构输入为三个i16值
+    检查每个值是否在0-255范围内
+    直接转换为u8类型（由于已经验证过范围，转换是安全的）
+切片实现：
+    首先检查切片长度是否为3
+    通过索引访问元素（确保长度有效后索引是安全的）
+    执行相同的范围检查
+    转换为u8类型
+错误处理：
+    IntConversion：当任何颜色通道值超出0-255范围时返回
+    BadLen：当切片长度不是3时返回
+*/
 
 fn main() {
     // Use the `try_from` function

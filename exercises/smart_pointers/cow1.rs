@@ -9,10 +9,17 @@
 // This exercise is meant to show you what to expect when passing data to Cow.
 // Fix the unit tests by checking for Cow::Owned(_) and Cow::Borrowed(_) at the
 // TODO markers.
+
+/*
+本练习探讨 Cow 或 Clone-On-Write 类型。Cow 是一个写时克隆的智能指针。它可以包含并提供对借用数据的不可变访问，并在需要更改或所有权时延迟克隆数据。该类型旨在通过 Borrow 特征处理一般借用数据。
+//
+本练习旨在向您展示将数据传递给 Cow 时会发生什么。通过在 TODO 标记处检查 Cow：：Owned（_） 和 Cow：：Borrowed（_） 来修复单元测试。
+*/
 //
 // Execute `rustlings hint cow1` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+
+//Cow有两种状态：Borrowed和Owned。当需要修改数据时，Cow会从Borrowed转为Owned，即克隆数据。
 
 use std::borrow::Cow;
 
@@ -30,7 +37,21 @@ fn abs_all<'a, 'b>(input: &'a mut Cow<'b, [i32]>) -> &'a mut Cow<'b, [i32]> {
 #[cfg(test)]
 mod tests {
     use super::*;
+/*
+reference_mutation测试：原始数据是slice的引用（Cow::Borrowed），
+    调用abs_all后，因为需要修改数据，所以会触发克隆，变成Owned。
+    所以这里匹配Cow::Owned是正确的。
 
+reference_no_mutation测试：原始数据是slice的引用，调用abs_all后，数据不需要修改，
+    所以Cow保持Borrowed状态。所以这里应该匹配Cow::Borrowed。
+
+owned_no_mutation测试：原始数据已经是Owned（因为Cow::from(slice)中的slice是vec，
+    所以Cow直接拥有它），调用abs_all后，数据不需要修改，所以仍然是Owned。
+    所以这里应该匹配Cow::Owned。
+
+owned_mutation测试：原始数据是Owned，调用abs_all时，虽然进行了修改，但因为已经是Owned状态，
+    所以不需要克隆。所以结果还是Owned。这里应该匹配Cow::Owned。
+*/
     #[test]
     fn reference_mutation() -> Result<(), &'static str> {
         // Clone occurs because `input` needs to be mutated.
@@ -49,6 +70,8 @@ mod tests {
         let mut input = Cow::from(&slice[..]);
         match abs_all(&mut input) {
             // TODO
+            Cow::Borrowed(_) => Ok(()),// 没有修改时保持借用状态
+            _ =>Err("Expected borrowed value")
         }
     }
 
@@ -61,6 +84,8 @@ mod tests {
         let mut input = Cow::from(slice);
         match abs_all(&mut input) {
             // TODO
+            Cow::Owned(_) => Ok(()),// 初始即为拥有状态且未修改
+            _ => Err("Expected owned value"),
         }
     }
 
@@ -73,6 +98,14 @@ mod tests {
         let mut input = Cow::from(slice);
         match abs_all(&mut input) {
             // TODO
+            Cow::Owned(_) => Ok(()),// 拥有状态修改后仍保持拥有
+            _ => Err("Expected owned value"),
         }
     }
 }
+
+/*
+reference_no_mutation 测试中，由于输入全为非负数，Cow保持Borrowed状态
+owned_no_mutation 测试中，初始即为Owned状态且未触发克隆，保持Owned状态
+owned_mutation 测试中，虽然进行了修改但原始数据已经是Owned状态，无需克隆，最终仍返回Owned状态
+*/

@@ -31,7 +31,7 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
+
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -49,11 +49,46 @@ enum ParsePersonError {
 // you want to return a string error message, you can do so via just using
 // return `Err("my error message".into())`.
 
+/*
+检查空输入： 如果输入字符串为空，返回ParsePersonError::Empty。
+分割字符串： 使用逗号分割字符串，并检查分割后的部分数量是否为2。
+验证字段： 确保名字部分不为空，年龄部分可解析为usize。
+返回结果： 所有检查通过后，构造Person实例并返回。
+*/
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.is_empty() {
+            return Err(ParsePersonError::Empty);
+        }
+ 
+        let parts: Vec<&str> = s.split(',').collect();
+        if parts.len() != 2 {
+            return Err(ParsePersonError::BadLen);
+        }
+ 
+        let name_part = parts[0];
+        let age_part = parts[1];
+ 
+        if name_part.is_empty() {
+            return Err(ParsePersonError::NoName);
+        }
+ 
+        let age = age_part
+            .parse::<usize>()
+            .map_err(ParsePersonError::ParseInt)?;
+ 
+        Ok(Person {
+            name: name_part.to_string(),
+            age,
+        })
     }
 }
+/*
+错误处理顺序： 先检查输入是否为空，再分割并验证字段数量，最后处理名字和年龄的有效性。
+提前返回： 每个错误条件都使用return Err(...)立即返回，避免执行后续代码。
+类型转换： 使用map_err将ParseIntError转换为自定义错误类型ParsePersonError::ParseInt。
+*/
 
 fn main() {
     let p = "Mark,20".parse::<Person>().unwrap();

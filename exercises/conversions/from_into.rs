@@ -39,11 +39,52 @@ impl Default for Person {
 //    `usize` as the age.
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
+/*
+你的任务是完成这个实现，以便编译 'let p =Person：：from（“Mark，20”）' 行。请注意，你需要将 age 组件解析为类似于 '“4”.parse：：（）' 的 'usize'。其结果需要得到适当的处理。
+//
+步骤：
+// 1.如果提供的字符串的长度为 0，则返回默认值
+人。
+// 2.将给定的字符串拆分为其中的逗号。
+// 3.从 split作中提取第一个元素并将其用作名称。
+// 4.如果名称为空，则返回默认值 Person。
+// 5.从 split作中提取另一个元素并将其解析为
+'usize' 作为年龄。
+如果在解析年龄时出现问题，则返回默认值 Person Otherwise，然后返回实例化的 Person 对象及其结果
+*/
 
-// I AM NOT DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        // 处理空字符串情况
+        if s.is_empty() {
+            return Person::default();//直接返回默认值
+        }
+ 
+        // 分割字符串
+        //使用split_once确保只分割第一个逗号，避免多个逗号导致的错误
+        let split_result = s.split_once(',');
+        let (name_part, age_part) = match split_result {
+            Some((name, age)) => (name, age),
+            None => return Person::default(), // 没有逗号的情况
+        };
+ 
+        // 处理姓名部分
+        //使用trim()去除前后空格，检查是否为空
+        let name = match name_part.trim() {
+            "" => return Person::default(), // 名称为空
+            name => name.to_string(),
+        };
+ 
+        // 处理年龄部分
+        //使用parse::<usize>()进行类型安全的转换
+        let age = match age_part.trim().parse::<usize>() {
+            Ok(age) => age,
+            Err(_) => return Person::default(), // 解析失败
+        };
+ 
+        // 所有验证通过，创建Person
+        Person { name, age }
     }
 }
 

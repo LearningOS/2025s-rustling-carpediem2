@@ -9,14 +9,19 @@
 // Execute `rustlings hint clippy1` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
 
 use std::f32;
 
 fn main() {
-    let pi = 3.14f32;
-    let radius = 5.00f32;
 
+    //let pi = 3.14f32;
+    // 使用标准库提供的精确π常量
+    //f32::consts::PI是Rust标准库提供的f32类型π常量（值约为3.1415927）
+    let pi = f32::consts::PI;
+    let radius = 5.00f32;
+//f32::powi用于整数指数，但你的半径是f32类型，应该使用f32::powf（用于浮点数指数）
+    //let area = pi * f32::powi(radius, 2);
     let area = pi * f32::powi(radius, 2);
 
     println!(
