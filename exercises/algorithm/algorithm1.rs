@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,16 +69,96 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+
+    //后面继续复习，和cpp差别明显
+	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self 
+    where 
+        T: Ord + Clone,//添加 Clone 约束：在 LinkedList<T> 的实现中，为类型参数 T 添加 Clone 约束。
 	{
 		//TODO
-		Self {
+		/*Self {
             length: 0,
             start: None,
             end: None,
+        }*/
+        let mut merged_list = LinkedList::new();
+ 
+        let mut a_ptr = list_a.start;
+        let mut b_ptr = list_b.start;
+ 
+        let mut merged_tail: Option<NonNull<Node<T>>> = None;
+ 
+        // 合并两个链表
+        while let (Some(a_node), Some(b_node)) = (a_ptr, b_ptr) {
+            unsafe {
+                let a_val = (*a_node.as_ptr()).val.clone();
+                let b_val = (*b_node.as_ptr()).val.clone();
+ 
+                let new_node = if a_val <= b_val {
+                    a_ptr = (*a_node.as_ptr()).next;
+                    Box::new(Node::new(a_val))
+                } else {
+                    b_ptr = (*b_node.as_ptr()).next;
+                    Box::new(Node::new(b_val))
+                };
+ 
+                let new_node_ptr = NonNull::new(Box::into_raw(new_node));
+                if merged_tail.is_none() {
+                    merged_list.start = new_node_ptr;
+                    merged_tail = new_node_ptr;
+                } else {
+                    (*merged_tail.unwrap().as_ptr()).next = new_node_ptr;
+                    merged_tail = new_node_ptr;
+                }
+            }
         }
+ 
+        // 处理剩余节点
+        let mut remaining_ptr = if a_ptr.is_some() { a_ptr } else { b_ptr };
+        while let Some(node) = remaining_ptr {
+            unsafe {
+                let new_node = Box::new(Node::new((*node.as_ptr()).val.clone()));
+                let new_node_ptr = NonNull::new(Box::into_raw(new_node));
+                if merged_tail.is_none() {
+                    merged_list.start = new_node_ptr;
+                    merged_tail = new_node_ptr;
+                } else {
+                    (*merged_tail.unwrap().as_ptr()).next = new_node_ptr;
+                    merged_tail = new_node_ptr;
+                }
+            }
+            remaining_ptr = unsafe { (*remaining_ptr.unwrap().as_ptr()).next };
+        }
+ 
+        // 更新链表长度
+        merged_list.length = list_a.length + list_b.length;
+ 
+        // 找到链表的末尾以设置 end 指针（可选，因为 end 指针在合并过程中未使用）
+        let mut current_ptr = merged_list.start;
+        let mut end_ptr = None;
+        while let Some(node_ptr) = current_ptr {
+            unsafe {
+                end_ptr = Some(node_ptr);
+                current_ptr = (*node_ptr.as_ptr()).next;
+            }
+        }
+        merged_list.end = end_ptr;
+ 
+        merged_list
+    
 	}
 }
+/*
+初始化：创建一个新的空链表 merged_list 用于存储合并结果。
+合并过程：使用两个指针 a_ptr 和 b_ptr 分别遍历 list_a 和 list_b，比较节点值后将较小的节点添加到 merged_list 中。
+处理剩余节点：当一个链表遍历完后，将另一个链表的剩余部分直接添加到 merged_list 中。
+更新长度：合并完成后，更新 merged_list 的长度。
+设置尾指针（可选）：遍历 merged_list 以设置尾指针（在合并过程中未使用，但可用于其他操作）。
+
+使用 NonNull<Node<T>> 和 Box::into_raw 来管理节点内存，确保内存安全。
+在合并过程中，直接操作原始指针，避免不必要的内存分配和释放。
+
+*/
 
 impl<T> Display for LinkedList<T>
 where

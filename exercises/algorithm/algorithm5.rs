@@ -3,11 +3,11 @@
 	This problem requires you to implement a basic BFS algorithm
 */
 
-//I AM NOT DONE
+
 use std::collections::VecDeque;
 
 // Define a graph
-struct Graph {
+struct Graph {//使用邻接表表示图，adj 是一个二维向量，其中 adj[i] 包含与节点 i 相邻的节点。
     adj: Vec<Vec<usize>>, 
 }
 
@@ -20,7 +20,7 @@ impl Graph {
     }
 
     // Add an edge to the graph
-    fn add_edge(&mut self, src: usize, dest: usize) {
+    fn add_edge(&mut self, src: usize, dest: usize) {//在无向图中添加一条边，假设图是无向的，因此在两个节点的邻接列表中分别添加对方
         self.adj[src].push(dest); 
         self.adj[dest].push(src); 
     }
@@ -29,12 +29,35 @@ impl Graph {
     fn bfs_with_return(&self, start: usize) -> Vec<usize> {
         
 		//TODO
-
+        let n = self.adj.len();
+        let mut visited = vec![false; n];
+        let mut queue = VecDeque::new();
         let mut visit_order = vec![];
+
+        // Start BFS from the given node
+        queue.push_back(start);
+        visited[start] = true;
+ 
+        while let Some(node) = queue.pop_front() {
+            visit_order.push(node);
+ 
+            for &neighbor in &self.adj[node] {
+                if !visited[neighbor] {
+                    visited[neighbor] = true;
+                    queue.push_back(neighbor);
+                }
+            }
+        }
         visit_order
     }
 }
-
+/*
+bfs_with_return 方法：
+    初始化一个布尔向量 visited 来跟踪已访问的节点。
+    使用 VecDeque 作为队列来管理待访问的节点。
+    从起始节点开始，将其标记为已访问并加入队列。
+    当队列不为空时，取出队首节点，记录访问顺序，并将其未访问的邻居加入队列。
+*/
 
 #[cfg(test)]
 mod tests {
