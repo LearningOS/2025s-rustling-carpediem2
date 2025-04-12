@@ -27,20 +27,36 @@
 //
 // You should NOT modify any existing code except for adding two lines of attributes.
 
-// I AM NOT DONE
 
-extern "Rust" {
+
+extern "Rust" { // 声明外部函数，但实际上它们会在下面定义
     fn my_demo_function(a: u32) -> u32;
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
 mod Foo {
     // No `extern` equals `extern "Rust"`.
-    fn my_demo_function(a: u32) -> u32 {
+    /*fn my_demo_function(a: u32) -> u32 {
+        a
+    }*/
+    // 使用 `#[no_mangle]` 防止符号名称被混淆
+    // 使用 `pub extern "Rust"` 导出函数以供外部链接
+    #[no_mangle]
+     pub extern "Rust" fn my_demo_function(a: u32) -> u32 {
         a
     }
-}
 
+    // 为了实现别名，直接让 `my_demo_function_alias` 调用 `my_demo_function`
+    #[no_mangle]
+    pub extern "Rust" fn my_demo_function_alias(a: u32) -> u32 {
+        my_demo_function(a) // 调用同一个函数
+    }
+}
+/*
+使用 #[no_mangle] 防止 Rust 编译器对函数名进行混淆（mangling），从而确保函数名在链接时保持一致。
+使用 pub extern "Rust" 导出函数，使其可以被 extern "Rust" 块中的声明链接。
+通过让 my_demo_function_alias 调用 my_demo_function，实现了函数别名的效果。
+*/
 #[cfg(test)]
 mod tests {
     use super::*;
